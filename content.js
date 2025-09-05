@@ -3,13 +3,13 @@
 */
 
 const REMOVER = [
-  "[class*='container-fluid']",
+  "[class*='container-fluid']", //menu cinza com ícones
   ".list-inline.pull-right.hidden-xs",
-  "[data-menu-id='criancas']",
-  "[data-original-title='Roteiro do iniciante']",
-  "#ultimostopicos",
-  "#topicossugeridos",
-  "[id^='lateral-par']"
+  "[data-menu-id='criancas']", //ícone das crianças
+  "[data-original-title='Roteiro do iniciante']", //icone do roteiro do iniciante
+  "#ultimostopicos", //últimos tópicos
+  "#topicossugeridos", //tópicos sugeridos
+  "[id^='lateral-par']" //menu lateral
 ];
 
 let enabled = true;

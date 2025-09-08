@@ -2,7 +2,7 @@
 	1-Início da Rotina de Remoção de Conteúdo
 */
 
-const REMOVER = [
+const REMOVER_GLOBAL = [
   "[class*='container-fluid']", //menu cinza com ícones
   ".list-inline.pull-right.hidden-xs",
   "[data-menu-id='criancas']", //ícone das crianças
@@ -11,6 +11,15 @@ const REMOVER = [
   "#topicossugeridos", //tópicos sugeridos
   "[id^='lateral-par']" //menu lateral
 ];
+
+const REMOVER_HOME = [
+  ".panel-body", //Remoção do corpo dos tópicos v1.0.1
+  'div.btn-group.pull-left.margin-bottom5[role="group"][aria-label="..."]', //Remoção do botão responder tópico da home
+  '.btn-comprar-voadora', //Botão comprar voadora
+  'div.dropdown.pull-left.margin-left-5.margin-bottom5:has(> a[title="Marcar tópico como lendário"])', //Botão Marcar como tópico Lendário
+  'div.dropdown.pull-left.margin-bottom5:has(> a.dropdown-toggle.share#btn-compartilhar)' //Botão Compartilhar
+];
+
 
 let enabled = true;
 let styleTag = null;
@@ -39,11 +48,46 @@ function applyRules(selectors) {
 }
 
 function loadAndApply() {
-  chrome.storage.sync.get({ selectors: REMOVER, disabled: false }, (res) => {
+  chrome.storage.sync.get({ selectors: REMOVER_GLOBAL, disabled: false }, (res) => {
     enabled = !res.disabled;
-    if (enabled) applyRules(res.selectors || REMOVER);
+
+    // base: sempre os seletores globais (ou os que vierem do storage)
+    const base = res.selectors || REMOVER_GLOBAL;
+
+    // considera home como /, /mercado ou /mercado/
+    const isHome =
+      location.pathname === '/' ||
+      location.pathname === '/mercado' ||
+      location.pathname === '/mercado/';
+
+    //Debug:
+    //console.log('[BLite] path:', location.pathname, 'isHome:', isHome);
+
+    // na home, adiciona os seletores extras; fora dela, só os globais
+    const finalSelectors = isHome ? [...base, ...REMOVER_HOME] : base;
+
+    // Para Debug
+    // finalSelectors.forEach(sel => {
+    //   try {
+    //     // mostra se o seletor existe na página
+    //     const found = document.querySelector(sel);
+    //     console.log(found ? '✔︎' : '—', sel, found || '');
+    //   } catch (e) {
+    //     console.warn('⚠︎ seletor INVÁLIDO:', sel, e.message);
+    //   }
+    // });
+
+    const styleEl = document.getElementById('bastter-lite-style');
+
+    //Debug:    
+    //console.log('[BLite] style present?', !!styleEl);
+    //if (styleEl) console.log('[BLite] css preview:', styleEl.textContent.slice(0, 400), '...');
+      
+
+    if (enabled) applyRules(finalSelectors);
   });
 }
+
 
 function toggleSession() {
   enabled = !enabled;

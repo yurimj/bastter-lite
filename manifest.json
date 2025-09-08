@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Bastter Lite",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Deixa o bastter.com mais limpo: oculta banners, barras e elementos distrativos. Personalizável nas opções.",
   "permissions": [
     "storage"

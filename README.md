@@ -10,3 +10,12 @@ Se quiser localizá-los será necessário clicar no "hamburger" de opções;
 -Remoção de parte do menu lateral
 -Remoção de tópicos sugeridos
 -Ajuste no layout para trazer imagem do perfil + basttersystem para próximo da busca.
+
+v1.0.1:
+-Adição de variável REMOVER_HOME. Que possibilitará ocultar itens exclusivamente da Home
+Remoção exclusivamente em Home:
+-Corpo do Tópico
+-Botão Responder Tópico
+-Comprar Voadora
+-Marcar Tópico como Lendário
+-Botão Compartilhar

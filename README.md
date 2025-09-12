@@ -19,3 +19,6 @@ Remoção exclusivamente em Home:
 -Comprar Voadora
 -Marcar Tópico como Lendário
 -Botão Compartilhar
+
+v1.0.2:
+-Criação de Grid para simplificar listagem dos conteúdos

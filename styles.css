@@ -1,1 +1,146 @@
-html,body{scroll-behavior:smooth;}
+/* === Bastter Lite: Tema Escuro === */
+:root {
+    --bl-bg-cinza: #262b36;
+    --bl-bg: #000000;
+    --bl-surface: #161a22;
+    --bl-soft: #1b2130;
+    --bl-text: #e6e6e6;
+    --bl-muted: #a8b3cf;
+    --bl-border: #262b36;
+    --bl-link: #80b3ff;
+    --bl-accent: #2a6df5;
+    --zebra-forte: #bcbdbe;
+}
+
+/*
+Tema dark desabilitado por enquanto
+html[data-blite-theme="dark"] body {
+    background: var(--bl-bg) !important;
+    color: var(--bl-text) !important;
+}
+*/
+
+/*Cabeçalho - logo bastter */
+/*
+Tema dark desabilitado por enquanto
+html[data-blite-theme="dark"] .caontiner-fluid {
+    background: var(--bl-bg-cinza) !important;
+}]
+*/    
+
+/*Grid novo, existente apenas na extensao blite*/
+/*Cabeçalho*/
+.blite-grid-header {
+    background-color: #a8b3cf;
+    color: #ffffff;
+    font-weight: bold;
+    padding: 8px 4px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+}
+
+.blite-grid-header>div {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 4px;
+}
+
+.blite-grid-header img {
+    height: 16px;
+    width: auto;
+}
+
+/*
+Tema dark desabilitado
+[data-blite-theme="dark"] .blite-grid-header {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+*/
+[data-blite-theme]:not([data-blite-theme="dark"]) .blite-grid-header {
+    background-color: #eaeaea;
+    color: #000000;
+}
+
+
+
+/* Corpo do Forum */
+/*
+.container.main-wrap {
+    background: var(--bl-bg) !important;
+}
+
+
+  html[data-blite-theme="dark"] small,
+  html[data-blite-theme="dark"] .text-muted {
+    color: var(--bl-muted) !important;
+  }
+  
+
+  html[data-blite-theme="dark"] .panel,
+  html[data-blite-theme="dark"] .panel-default,
+  html[data-blite-theme="dark"] .well,
+  html[data-blite-theme="dark"] .dropdown-menu,
+  html[data-blite-theme="dark"] .list-group-item,
+  html[data-blite-theme="dark"] .modal-content,
+  html[data-blite-theme="dark"] .navbar,
+  html[data-blite-theme="dark"] .breadcrumb,
+  html[data-blite-theme="dark"] .btn-default,
+  html[data-blite-theme="dark"] .panel-footer {
+    background: var(--bl-surface) !important;
+    color: var(--bl-text) !important;
+    border-color: var(--bl-border) !important;
+    box-shadow: none !important;
+  }  
+  
+  html[data-blite-theme="dark"] select,
+  html[data-blite-theme="dark"] textarea,  
+  html[data-blite-theme="dark"] .form-control {
+    background: var(--bl-soft) !important;
+    color: var(--bl-text) !important;
+    border-color: var(--bl-border) !important;
+  }
+
+
+  html[data-blite-theme="dark"] .input-group-addon {
+    background: var(--bl-soft) !important;
+    color: var(--bl-text) !important;
+    border-color: var(--bl-border) !important;
+  }
+*/
+
+
+
+/*minimalismo*/
+
+/* Oculta todo conteúdo interno dos tópicos */
+/*
+.panel .panel-body,
+.panel .panel-footer,
+.panel .panel-heading * {
+  display: none !important;
+}
+*/
+/* 
+.panel .panel-heading h4 {
+  display: block !important;
+  font-size: 16px !important;
+  font-weight: bold;
+  margin: 0 !important;
+  padding: 8px 10px !important;
+  color: #b3caff !important; 
+}
+
+.panel {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.panel-heading {
+  padding: 0 !important;
+} */

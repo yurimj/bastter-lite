@@ -1,3 +1,4 @@
+
 /*
 	1-Início da Rotina de Remoção de Conteúdo
 */
@@ -108,6 +109,7 @@ mo.observe(document.documentElement, { childList: true, subtree: true });
 // inicializa
 loadAndApply();
 
+
 /*
 	2-Rotina de Ajuste Visual no Cabeçalho
 */
@@ -173,4 +175,331 @@ loadAndApply();
     }
   `;
   (document.head || document.documentElement).appendChild(st);
+})();
+
+/*
+  3- Tema Black
+*/
+
+function bliteApplyDark(on) {
+  if (on) {
+    document.documentElement.setAttribute('data-blite-theme', 'dark');
+  } else {
+    document.documentElement.removeAttribute('data-blite-theme');
+  }
+}
+
+// Inicializa com o estado salvo
+chrome.storage.sync.get({ bliteDark: false }, ({ bliteDark }) => {
+  bliteApplyDark(!!bliteDark);
+});
+
+// Reage a mudanças
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'sync' && 'bliteDark' in changes) {
+    bliteApplyDark(!!changes.bliteDark.newValue);
+  }
+});
+
+// Atalho ALT+D
+document.addEventListener('keydown', (e) => {
+  if (e.altKey && (e.key === 'd' || e.key === 'D')) {
+    chrome.storage.sync.get({ bliteDark: false }, ({ bliteDark }) => {
+      chrome.storage.sync.set({ bliteDark: !bliteDark });
+    });
+  }
+});
+
+// //força tema
+// function forceNavbarDark() {
+//   // só força quando o tema escuro estiver ativo
+//   if (document.documentElement.getAttribute('data-blite-theme') !== 'dark') return;
+
+//   const nodes = document.querySelectorAll('nav.navbar.navbar-default, .navbar.navbar-default');
+//   nodes.forEach((el) => {
+//     el.style.setProperty('background', 'var(--bl-muted)', 'important');
+//     el.style.setProperty('background-image', 'none', 'important');
+//     el.style.setProperty('border-color', 'var(--bl-border)', 'important');
+//     el.style.setProperty('box-shadow', 'none', 'important');
+//   });
+
+//   // links/textos dentro da navbar
+//   const links = document.querySelectorAll('.navbar.navbar-default a, .navbar.navbar-default .navbar-text, .navbar.navbar-default .navbar-brand');
+//   links.forEach((el) => {
+//     el.style.setProperty('color', 'var(--bl-bg)', 'important');
+//   });
+// }
+
+// // chame após aplicar o tema
+// chrome.storage.sync.get({ bliteDark: false }, ({ bliteDark }) => {
+//   bliteApplyDark(!!bliteDark);
+//   forceNavbarDark();
+// });
+
+// // reforce quando o tema mudar via options/atalho
+// chrome.storage.onChanged.addListener((changes, area) => {
+//   if (area === 'sync' && 'bliteDark' in changes) {
+//     bliteApplyDark(!!changes.bliteDark.newValue);
+//     forceNavbarDark();
+//   }
+// });
+
+// // e quando o DOM mudar (site injeta coisas depois)
+// new MutationObserver(() => forceNavbarDark())
+//   .observe(document.documentElement, { childList: true, subtree: true });
+
+// // tenta de novo após delays (pega CSS que entra atrasado)
+// setTimeout(forceNavbarDark, 300);
+// setTimeout(forceNavbarDark, 1000);
+// setTimeout(forceNavbarDark, 2500);
+
+
+
+/*
+    4- Grid Simplificado dos tópicos
+*/
+
+(function () {
+  const GRID_ID = "blite-grid-topicos";
+  const HR_SELECTOR = 'hr#bloco-topico-inicio.invisivel';
+  const TOPIC_LINKS_SELECTOR = 'h2.topico-titulo a[href*="forum"]';
+  
+  const HEADER_CLASSES = [
+    "col-12 col-sm-12 col-md-6 col-lg-6", // Col 1
+    "col-12 col-sm-6 col-md-6 col-lg-1",  // Col 2
+    "col-12 col-sm-6 col-md-6 col-lg-1",  // Col 3
+    "col-12 col-sm-6 col-md-6 col-lg-1",  // Col 4
+    "col-12 col-sm-6 col-md-6 col-lg-3"  // Col 5
+  ];      
+
+
+  // Cria ou retorna o grid antes do HR
+  function ensureGrid() {
+    const hr = document.querySelector(HR_SELECTOR);
+    if (!hr) return null;
+  
+    let grid = document.getElementById(GRID_ID);
+    if (!grid) {
+      grid = document.createElement("div");
+      grid.id = GRID_ID;
+  
+      // Header (com nomes fixos + tamanhos sincronizados)
+      const NOMES_COLUNAS = [
+        { html: "Tópico" },
+        { html: '<img src="/mercado/images/icone-curtir.svg" class="img-responsive icone-bastter-svg">' },
+        { html: '<img src="/mercado/images/icone-voadora.svg" class="img-responsive icone-voadora-svg">' },
+        { html: '<i class="fa fa-eye"></i>' },
+        { html: "Autor" }
+      ];
+      
+  
+      const header = document.createElement("div");
+      header.className = "row blite-grid-header";
+
+      for (let i = 0; i < 5; i++) {
+        const col = document.createElement("div");
+        col.className = HEADER_CLASSES[i];
+
+      
+        const conteudo = NOMES_COLUNAS[i];
+        if (!conteudo) {
+          col.textContent = `Col ${i + 1}`;
+        } else if (typeof conteudo.html === "string") {
+          col.innerHTML = conteudo.html;
+        } else {
+          col.textContent = conteudo.html; // fallback, se vier texto puro
+        }
+      
+        header.appendChild(col);
+      }
+      
+  
+      grid.appendChild(header);
+      hr.parentNode.insertBefore(grid, hr);
+    }
+  
+    return grid;
+  }
+  
+
+  // Remove todas as linhas geradas anteriormente (mantém apenas o header)
+  function clearOldRows(grid) {
+    if (!grid) return;
+    // mantém o primeiro filho (header)
+    while (grid.children.length > 1) {
+      grid.removeChild(grid.lastChild);
+    }
+  }
+
+  // Constrói as rows a partir dos tópicos
+  function buildRows() {
+    const grid = ensureGrid();
+    if (!grid) return;
+
+    clearOldRows(grid);
+
+    const links = document.querySelectorAll(TOPIC_LINKS_SELECTOR);
+
+    links.forEach((a) => {
+      // Cria uma linha
+      const row = document.createElement("div");
+      row.className = "row blite-grid-row"; 
+
+      // Col 1 recebe o link (clone, pra não mexer no DOM original)
+      const col1 = document.createElement("div");
+      col1.className = "col-12 col-sm-12 col-md-6 col-lg-6";
+      const clone = a.cloneNode(true);
+      // opcional: abrir em nova aba
+      clone.setAttribute("target", "_blank");
+      clone.setAttribute("rel", "noopener");
+      col1.appendChild(clone);
+      row.appendChild(col1);
+
+      // Demais colunas vazias por enquanto
+      for (let i = 2; i <= 5; i++) {
+        const col = document.createElement("div");
+
+        col.className = HEADER_CLASSES[i - 1] || "col-12"; // fallback seguro
+
+              
+        if (i === 2) {
+          // busca o container pai do link do tópico
+          let qtd = "-"; // valor padrão
+
+          // vamos tentar subir alguns níveis e procurar dentro do bloco do tópico
+          let current = a;
+          for (let i = 0; i < 5; i++) {
+            if (!current.parentElement) break;
+            current = current.parentElement;
+          
+            const btn = current.querySelector('a[id^="qtdCurtiram_"]');
+            if (btn) {
+              qtd = btn.textContent.trim();
+              break;
+            }
+          }
+          
+          col.textContent = qtd;
+        } else
+        if (i === 3) {
+          // busca o container pai do link do tópico
+          let qtd = "-"; // valor padrão
+
+          // vamos tentar subir alguns níveis e procurar dentro do bloco do tópico
+          let current = a;
+          for (let i = 0; i < 5; i++) {
+            if (!current.parentElement) break;
+            current = current.parentElement;
+          
+            const btn = current.querySelector('a[id^="qtdNaoCurtiram_"]');
+            if (btn) {
+              qtd = btn.textContent.trim();
+              break;
+            }
+          }
+          
+          col.textContent = qtd;
+        } else 
+        if (i === 4) {
+          // busca o container pai do link do tópico
+          let qtd = "-"; // valor padrão
+
+          let current = a;
+          for (let i = 0; i < 5; i++) {
+            if (!current.parentElement) break;
+            current = current.parentElement;
+          
+            const btn = current.querySelector('a.btn-visto-count');
+            if (btn) {
+              qtd = btn.textContent.trim();
+              break;
+            }
+          }
+          
+          col.textContent = qtd;
+        } else
+        if (i === 5) {
+           
+
+          // busca o container pai do link do tópico
+          let qtd = "-"; // valor padrão
+
+          let current = a;
+          for (let i = 0; i < 5; i++) {
+            if (!current.parentElement) break;
+            current = current.parentElement;
+          
+            const btn = current.querySelector('a.profileLink');
+            if (btn) {
+              col.innerHTML = btn.outerHTML;
+              break;
+            }
+          }
+          
+          //col.textContent = qtd;          
+
+        }
+      
+        row.appendChild(col);
+      }
+      
+
+      grid.appendChild(row);
+    });
+  }
+
+  // Debounce pra não reconstruir freneticamente
+  function debounce(fn, ms) {
+    let t;
+    return function (...args) {
+      clearTimeout(t);
+      t = setTimeout(() => fn.apply(this, args), ms);
+    };
+  }
+
+  const buildRowsDebounced = debounce(buildRows, 150);
+
+  // Primeira construção
+  buildRows();
+
+  // Observa mudanças (scroll infinito, filtros, etc.)
+  const obs = new MutationObserver((muts) => {
+    // Reconstrói quando aparecer/emudar h2.topico-titulo ou o container dos tópicos
+    const changed = muts.some((m) =>
+      [...m.addedNodes, ...m.removedNodes].some((n) => {
+        if (!(n instanceof HTMLElement)) return false;
+        return (
+          n.matches?.("h2.topico-titulo, " + HR_SELECTOR) ||
+          n.querySelector?.("h2.topico-titulo, " + HR_SELECTOR)
+        );
+      })
+    );
+    if (changed) buildRowsDebounced();
+  });
+
+  obs.observe(document.documentElement || document.body, {
+    childList: true,
+    subtree: true,
+  });
+
+  // expõe manualmente no console se quiser chamar: window.BLiteRebuildGrid()
+  window.BLiteRebuildGrid = buildRows;
+})();
+
+
+(function applyGridStyles() {
+  const style = document.createElement("style");
+  style.id = "blite-grid-style";
+  style.textContent = `
+    /* Estilo alternado (zebra) nas linhas */
+    #blite-grid-topicos > .blite-grid-row:nth-child(odd) {
+      background-color: #ffffff !important;
+    }
+
+    [data-blite-theme]:not([data-blite-theme="dark"]) #blite-grid-topicos > .blite-grid-row:nth-child(odd) {
+      background-color: #bcbdbe !important;
+    }
+
+  `;
+  document.head.appendChild(style);
 })();

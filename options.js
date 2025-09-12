@@ -1,3 +1,13 @@
+const el = document.getElementById('blite-dark');
+
+chrome.storage.sync.get({ bliteDark: false }, ({ bliteDark }) => {
+  el.checked = !!bliteDark;
+});
+
+el.addEventListener('change', () => {
+  chrome.storage.sync.set({ bliteDark: el.checked });
+});
+
 
 const DEFAULTS = [
   "header",
